@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>CampusPulse - Smart Campus Monitoring Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app" class="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="app-sidebar" id="app-sidebar" aria-label="Main Navigation">
+      <div class="sidebar-header">
+        <div class="sidebar-logo" aria-hidden="true">CP</div>
+        <div class="sidebar-title-group">
+          <h1>CampusPulse</h1>
+          <span class="project-subtitle">Network Prog · Group 02</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button type="button" class="nav-item active" data-view="overview" id="nav-btn-overview" aria-current="page">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+          </svg>
+          <span>Overview</span>
+        </button>
+
+        <button type="button" class="nav-item" data-view="rooms" id="nav-btn-rooms">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H6v-4h6v4zm0-6H6V7h6v4zm7 6h-5v-4h5v4zm0-6h-5V7h5v4z"/>
+          </svg>
+          <span>Rooms &amp; Sensors</span>
+          <span class="nav-counter" id="nav-counter-rooms">0</span>
+        </button>
+
+        <button type="button" class="nav-item" data-view="alerts" id="nav-btn-alerts">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+          </svg>
+          <span>Alerts &amp; Incidents</span>
+          <span class="nav-counter alert-counter" id="nav-counter-alerts">0</span>
+        </button>
+
+        <button type="button" class="nav-item" data-view="network" id="nav-btn-network">
+          <svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+          </svg>
+          <span>Network Services</span>
+        </button>
+      </nav>
+
+      <!-- Assignment Reference Footer -->
+      <div class="sidebar-footer">
+        <div class="assignment-badge-box">
+          <div class="tag">Assignment 02</div>
+          <div class="title">5 Integrated Concepts</div>
+          <div class="meta">TCP · UDP · Multicast · Threads · HTTP</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Top Application Header -->
+      <header class="app-header" aria-label="Dashboard Header">
+        <div class="header-left">
+          <button type="button" class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle navigation drawer">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+            </svg>
+          </button>
+          <div class="view-breadcrumb">
+            <span class="breadcrumb-label">Campus Monitoring</span>
+            <span class="current-view-title" id="page-title">Operations Overview</span>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Mock Data Badge Indicator -->
+          <div id="mock-badge" class="mock-badge-indicator" title="Current data provider mode">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            <span id="mock-badge-text">MOCK DATA MODE</span>
+          </div>
+
+          <!-- Switch to Toggle Mock / Live HTTP Mode -->
+          <button type="button" class="mode-toggle-btn" id="mode-toggle-btn" title="Toggle between local mock data and live Java HTTP backend">
+            <span id="mode-toggle-label">Mode: Mock</span>
+          </button>
+
+          <!-- Simulate Sensor Update (Mock Mode Only) -->
+          <button type="button" class="btn-simulate" id="btn-simulate-reading" title="Simulate an incoming sensor reading (for frontend testing only)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+            </svg>
+            <span>Simulate Reading</span>
+          </button>
+
+          <!-- Refresh Button -->
+          <button type="button" class="btn-refresh" id="btn-refresh-data" title="Refresh monitoring data" aria-label="Refresh data">
+            <svg viewBox="0 0 24 24">
+              <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+            </svg>
+          </button>
+
+          <!-- Header Clock -->
+          <span class="header-clock" id="header-clock" aria-label="Current system time">--:--:--</span>
+        </div>
+      </header>
+
+      <!-- Global Connectivity / Notification Banner -->
+      <div id="global-banner" class="global-banner" style="display: none;" role="alert">
+        <span id="banner-message">Backend server offline. Showing fallback state.</span>
+        <button type="button" class="banner-action-btn" id="banner-action-btn">Switch to Mock</button>
+      </div>
+
+      <!-- Main Dynamic Content Views -->
+      <main class="content-container" id="main-content">
+
+        <!-- ========================================================
+             SCREEN A: DASHBOARD / OVERVIEW
+             ======================================================== -->
+        <section id="view-overview" class="view-section active" aria-labelledby="overview-heading">
+          <h2 id="overview-heading" class="visually-hidden" style="display:none;">Campus Operations Overview</h2>
+
+          <!-- Campus Operational Status Card -->
+          <div class="campus-status-card" id="campus-status-card">
+            <div class="campus-status-info">
+              <h2 id="campus-status-headline">
+                <span id="campus-status-indicator" class="badge badge-normal">System Normal</span>
+                <span>Campus Pulse Central Monitoring</span>
+              </h2>
+              <p class="campus-status-desc">
+                Centralized monitoring aggregator connecting simulated UDP room sensors, reliable TCP staff incident handlers, and IP multicast emergency broadcast listeners.
+              </p>
+            </div>
+            <div class="demo-status-pill badge-info" id="env-status-pill">
+              <span>Environment: Local Standalone</span>
+            </div>
+          </div>
+
+          <!-- Summary KPI Metric Cards -->
+          <div class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-label">Monitored Facilities</span>
+                <div class="kpi-icon-wrapper">
+                  <svg viewBox="0 0 24 24"><path d="M12 7V3H2v18h20V7H12zM6 19H4v-2h2v2zm0-4H4v-2h2v2zm0-4H4V9h2v2zm0-4H4V5h2v2zm4 12H8v-2h2v2zm0-4H8v-2h2v2zm0-4H8V9h2v2zm0-4H8V5h2v2zm10 12h-8v-2h2v-2h-2v-2h2v-2h-2V9h8v10zm-2-8h-2v2h2v-2zm0 4h-2v2h2v-2z"/></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-total-rooms">0</div>
+              <div class="kpi-subtext">Active telemetry streams</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-label">Warning / Critical</span>
+                <div class="kpi-icon-wrapper" style="color: var(--status-critical);">
+                  <svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-warning-rooms" style="color: var(--status-critical);">0</div>
+              <div class="kpi-subtext">Rooms requiring inspection</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-label">Active Incidents</span>
+                <div class="kpi-icon-wrapper" style="color: var(--status-warning);">
+                  <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-active-alerts">0</div>
+              <div class="kpi-subtext" id="kpi-unack-subtext">0 unacknowledged</div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-card-header">
+                <span class="kpi-label">Network Services</span>
+                <div class="kpi-icon-wrapper" style="color: var(--status-normal);">
+                  <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                </div>
+              </div>
+              <div class="kpi-value" id="kpi-health-status">UP</div>
+              <div class="kpi-subtext" id="kpi-health-uptime">Central Server Health</div>
+            </div>
+          </div>
+
+          <!-- Dual Column: Recent Sensor Readings & Recent Alerts -->
+          <div class="overview-grid">
+            <!-- Left Panel: Recent Sensor Readings -->
+            <div class="card-panel">
+              <div class="card-panel-header">
+                <div class="card-panel-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--primary-maroon)">
+                    <path d="M15 13V5c0-1.66-1.34-3-3-3S9 3.34 9 5v8c-1.21.91-2 2.37-2 4 0 2.76 2.24 5 5 5s5-2.24 5-5c0-1.63-.79-3.09-2-4zm-4-8c0-.55.45-1 1-1s1 .45 1 1h-1v1h1v2h-1v1h1v2h-2V5z"/>
+                  </svg>
+                  <span>Sensor Telemetry Highlights</span>
+                </div>
+                <button type="button" class="card-panel-action" id="overview-view-all-rooms">View All Rooms &rarr;</button>
+              </div>
+              <div class="card-panel-body" id="overview-sensor-highlights">
+                <!-- Dynamically populated room preview cards -->
+                <div class="loading-skeleton-row"></div>
+                <div class="loading-skeleton-row"></div>
+                <div class="loading-skeleton-row"></div>
+              </div>
+            </div>
+
+            <!-- Right Panel: Recent Alert Activity -->
+            <div class="card-panel">
+              <div class="card-panel-header">
+                <div class="card-panel-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--status-critical)">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                  </svg>
+                  <span>Recent Alert Activity</span>
+                </div>
+                <button type="button" class="card-panel-action" id="overview-view-all-alerts">View All Alerts &rarr;</button>
+              </div>
+              <div class="card-panel-body" id="overview-alerts-feed">
+                <!-- Dynamically populated alert items -->
+                <div class="loading-skeleton-row"></div>
+                <div class="loading-skeleton-row"></div>
+                <div class="loading-skeleton-row"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             SCREEN B: ROOMS / SENSORS
+             ======================================================== -->
+        <section id="view-rooms" class="view-section" aria-labelledby="rooms-heading">
+          <h2 id="rooms-heading" class="visually-hidden" style="display:none;">Campus Rooms and Telemetry</h2>
+
+          <!-- Filtering & Search Toolbar -->
+          <div class="toolbar-bar">
+            <div class="toolbar-filters">
+              <div class="search-input-wrapper">
+                <svg class="search-icon" viewBox="0 0 24 24">
+                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <input type="text" id="rooms-search-input" class="search-input" placeholder="Search by Room ID, name, building..." aria-label="Search campus rooms">
+              </div>
+
+              <select id="rooms-status-filter" class="select-filter" aria-label="Filter rooms by operational status">
+                <option value="ALL">All Statuses</option>
+                <option value="NORMAL">Normal</option>
+                <option value="WARNING">Warning</option>
+                <option value="CRITICAL">Critical</option>
+              </select>
+
+              <select id="rooms-building-filter" class="select-filter" aria-label="Filter rooms by building complex">
+                <option value="ALL">All Buildings</option>
+              </select>
+            </div>
+
+            <div class="toolbar-counts" id="rooms-count-display">
+              Showing 0 rooms
+            </div>
+          </div>
+
+          <!-- Room Cards Grid -->
+          <div class="rooms-grid" id="rooms-cards-container">
+            <!-- Dynamically populated room cards -->
+          </div>
+        </section>
+
+        <!-- ========================================================
+             SCREEN C: ALERTS / INCIDENTS
+             ======================================================== -->
+        <section id="view-alerts" class="view-section" aria-labelledby="alerts-heading">
+          <h2 id="alerts-heading" class="visually-hidden" style="display:none;">Campus Incidents and Alerts</h2>
+
+          <!-- Filter Toolbar -->
+          <div class="toolbar-bar">
+            <div class="toolbar-filters">
+              <div class="search-input-wrapper">
+                <svg class="search-icon" viewBox="0 0 24 24">
+                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <input type="text" id="alerts-search-input" class="search-input" placeholder="Search alerts by room, message, or source..." aria-label="Search alerts">
+              </div>
+
+              <select id="alerts-severity-filter" class="select-filter" aria-label="Filter alerts by severity">
+                <option value="ALL">All Severities</option>
+                <option value="CRITICAL">Critical</option>
+                <option value="WARNING">Warning</option>
+                <option value="INFO">Info</option>
+              </select>
+            </div>
+
+            <div class="toolbar-counts" id="alerts-count-display">
+              Showing 0 alerts
+            </div>
+          </div>
+
+          <!-- Responsive Alerts Table -->
+          <div class="table-responsive">
+            <table class="data-table" aria-label="Recent Incident and Warning Alerts">
+              <thead>
+                <tr>
+                  <th scope="col">Severity</th>
+                  <th scope="col">Alert ID</th>
+                  <th scope="col">Source / Protocol</th>
+                  <th scope="col">Room</th>
+                  <th scope="col">Incident Description</th>
+                  <th scope="col">Timestamp</th>
+                  <th scope="col">Acknowledgment</th>
+                </tr>
+              </thead>
+              <tbody id="alerts-table-body">
+                <!-- Dynamically populated alert rows -->
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ========================================================
+             SCREEN D: NETWORK STATUS
+             ======================================================== -->
+        <section id="view-network" class="view-section" aria-labelledby="network-heading">
+          <h2 id="network-heading" class="visually-hidden" style="display:none;">Network Services and Assignment Architecture</h2>
+
+          <!-- Educational Architecture Banner -->
+          <div class="network-intro-banner">
+            <h3>CampusPulse Networking Architecture</h3>
+            <p>
+              Each of the five cards below corresponds to an individual member's networking assignment contribution.
+              This centralized status reflects the unified server health response reported by the backend API adapter.
+            </p>
+          </div>
+
+          <!-- 5 Service Cards Grid -->
+          <div class="services-grid" id="network-services-grid">
+            <!-- Dynamically populated with TCP, UDP, Multicast, Concurrency, HTTP cards -->
+          </div>
+
+          <!-- Integration Notes For Group Members -->
+          <div class="integration-box">
+            <h4>Module Integration Contracts</h4>
+            <div class="integration-grid">
+              <div class="integration-step">
+                <span class="step-num">Step 1 · Ingestion</span>
+                <div class="step-title">UDP Sensor Streams</div>
+                <div class="step-desc">
+                  Member 2 sends UDP packets (<code>SENSOR|B201|TEMP|36.8|1700</code>). Member 4's concurrent listener validates and commits to shared in-memory state.
+                </div>
+              </div>
+
+              <div class="integration-step">
+                <span class="step-num">Step 2 · Rules &amp; Broadcast</span>
+                <div class="step-title">Multicast Alert Group</div>
+                <div class="step-desc">
+                  When a rule is breached (temp &ge; 35&deg;C), Member 3's multicast publisher sends emergency notices to group <code>230.0.0.1:4446</code>.
+                </div>
+              </div>
+
+              <div class="integration-step">
+                <span class="step-num">Step 3 · Commands &amp; HTTP</span>
+                <div class="step-title">TCP Staff &amp; REST Dashboard</div>
+                <div class="step-desc">
+                  Member 1 handles TCP incident reports and ACKs. Member 5 serves this web dashboard and <code>/api/rooms</code>, <code>/api/alerts</code>, <code>/api/health</code>.
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container for User Actions -->
+  <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+  <!-- Scripts: Order is Critical (Mock -> API Adapter -> App Controller) -->
+  <script src="js/mock-data.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
